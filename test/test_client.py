@@ -6,10 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-MCP_SERVER_URL = os.getenv("MCP_SERVER_URL")
-if not MCP_SERVER_URL:
-    print("✗ Set MCP_SERVER_URL env var first")
-    exit(1)
+MCP_SERVER_URL = os.getenv("MCP_SERVER_URL", "http://localhost:8000/mcp")
 
 async def discord_auth():
     """Test Discord OAuth authentication."""
@@ -20,9 +17,9 @@ async def discord_auth():
 
 async def api_key_auth():
     """Test API key authentication."""
-    api_key = os.getenv("PANDA_MCP_API_KEY")
+    api_key = os.getenv("CRYPTO_MCP_API_KEY")
     if not api_key:
-        print("✗ Set PANDA_MCP_API_KEY env var first")
+        print("✗ Set CRYPTO_MCP_API_KEY env var first")
         return
     
     print(f"Using API key: {api_key[:20]}...")
@@ -41,7 +38,17 @@ async def privy_auth():
         result = await client.call_tool("get_user_info")
         print(result)
 
+async def auth0_auth():
+    # The client will automatically handle Auth0 OAuth flows
+    async with Client("http://localhost:8000/mcp", auth="oauth") as client:
+        # First-time connection will open Auth0 login in your browser
+        print("✓ Authenticated with Auth0!")
+
+        # Test the protected tool
+        result = await client.call_tool("get_token_info")
+        print(f"Auth0 audience: {result['audience']}")
 
 if __name__ == "__main__":
     # asyncio.run(api_key_auth())
     asyncio.run(privy_auth())
+    # asyncio.run(auth0_auth())

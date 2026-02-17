@@ -206,11 +206,11 @@ function MCPLoginContent() {
           
           <div className="welcome-brand">
             <img 
-              src="https://www.app.pandaterminal.com/logo.svg" 
-              alt="PANDA" 
+              src="https://media.discordapp.net/attachments/1472256547722629382/1473273454856896583/bitcoin-btc-logo.png?ex=69959c53&is=69944ad3&hm=92c00a3d047f2f91bd93f041c6553e0f3e19966e839ae532946bbda34d0c0994&=&format=webp&quality=lossless&width=1338&height=1338" 
+              alt="Crypto MCP" 
               className="welcome-logo" 
             />
-            <span className="welcome-name">PANDA MCP</span>
+            <span className="welcome-name">Crypto MCP</span>
           </div>
 
           <h1 className="welcome-title" style={{ fontSize: "36px" }}>
@@ -237,11 +237,11 @@ function MCPLoginContent() {
         
         <div className="welcome-brand">
           <img 
-            src="https://www.app.pandaterminal.com/logo.svg" 
-            alt="PANDA" 
+            src="https://media.discordapp.net/attachments/1472256547722629382/1473273454856896583/bitcoin-btc-logo.png?ex=69959c53&is=69944ad3&hm=92c00a3d047f2f91bd93f041c6553e0f3e19966e839ae532946bbda34d0c0994&=&format=webp&quality=lossless&width=1338&height=1338" 
+            alt="Crypto MCP" 
             className="welcome-logo" 
           />
-          <span className="welcome-name">PANDA MCP</span>
+          <span className="welcome-name">Crypto MCP</span>
         </div>
 
         <h1 className="welcome-title">
@@ -250,8 +250,8 @@ function MCPLoginContent() {
 
         <p className="welcome-description">
           {oauthParams.client_name 
-            ? `${oauthParams.client_name} is requesting access to your PANDA MCP account.`
-            : "An application is requesting access to your PANDA MCP account."
+            ? `${oauthParams.client_name} is requesting access to your Crypto MCP account.`
+            : "An application is requesting access to your Crypto MCP account."
           }
         </p>
 

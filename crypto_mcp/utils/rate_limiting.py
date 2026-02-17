@@ -32,19 +32,20 @@ def get_client_identifier(context):
     try:
         token = get_access_token()
         if token and hasattr(token, 'claims') and token.claims:
-            # Check auth type for logging
+            logger.info(f"Rate limiting: token claims = {token.claims}")
+            logger.info(f"Rate limiting: token client_id = {token.client_id}")
             auth_type = token.claims.get("type", "oauth")
-            client_id = token.claims.get("sub")
+            client_id = token.claims.get("sub") or token.claims.get("privy_did") or token.client_id
             
             if client_id:
                 if auth_type == "api_key":
                     logger.debug(f"Rate limiting: API key {client_id}")
                 else:
-                    logger.debug(f"Rate limiting: Discord user {client_id}")
+                    logger.debug(f"Rate limiting: Privy user {client_id}")
                 return client_id
             
         # This should never happen if auth is properly configured
-        logger.error("Rate limiting: Token exists but has no 'sub' claim")
+        logger.error("Rate limiting: Token exists but has no 'sub' claim. Claims: %s", token.claims if token else "no token")
         raise ValueError("Invalid token: missing 'sub' claim")
         
     except Exception as e:

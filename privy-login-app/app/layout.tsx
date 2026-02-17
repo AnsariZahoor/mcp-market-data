@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PANDA MCP Login",
-  description: "Login to PANDA MCP Server",
+  title: "Crypto MCP Login",
+  description: "Login to Crypto MCP Server",
 };
 
 export default function RootLayout({

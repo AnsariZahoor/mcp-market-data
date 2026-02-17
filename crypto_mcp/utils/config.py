@@ -10,7 +10,7 @@ load_dotenv()
 
 # Auth & server
 BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")
-LOCAL_TEST = os.getenv("LOCAL_TEST", "false").lower()
+LOCAL_TEST = os.getenv("LOCAL_TEST", "false").lower() in ("true", "1", "yes")
 REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
 JWT_SIGNING_KEY = os.getenv("JWT_SIGNING_KEY")
 STORAGE_ENCRYPTION_KEY = os.getenv("STORAGE_ENCRYPTION_KEY")

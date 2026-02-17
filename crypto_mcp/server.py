@@ -7,6 +7,7 @@ Authentication:
 - API keys (crypto_sk_*) for programmatic access
 - Privy OAuth for interactive users
 """
+import time
 from fastmcp import FastMCP
 from starlette.responses import JSONResponse
 from fastmcp.server.dependencies import get_access_token
@@ -101,22 +102,56 @@ async def health_check(request):
     return JSONResponse({"status": "healthy", "service": "crypto-mcp-server"})
 
 
+# Add a protected tool to test authentication
 @mcp.tool
-async def get_token_info() -> dict:
+async def get_user_info() -> dict:
     """Returns information about the authenticated user (Privy or API key)."""
     token = get_access_token()
+    
     auth_type = token.claims.get("type", "unknown")
+    
     if auth_type == "api_key":
-        return {"auth_type": "api_key", "client_id": token.claims.get("sub")}
-    if auth_type == "privy":
+        return {
+            "auth_type": "api_key",
+            "client_id": token.claims.get("sub"),
+        }
+    elif auth_type == "privy":
         return {
             "auth_type": "privy",
             "user_id": token.claims.get("sub"),
             "email": token.claims.get("email"),
             "privy_did": token.claims.get("privy_did"),
         }
-    return {"auth_type": auth_type, "claims": token.claims}
+    else:
+        return {
+            "auth_type": auth_type,
+            "claims": token.claims,
+        }
 
+# Add a simple test tool to verify rate limiting
+@mcp.tool
+async def test_rate_limit() -> dict:
+    """Simple test tool to verify rate limiting is working. Returns success message."""
+    return {
+        "status": "success",
+        "message": "Rate limiting test tool executed successfully",
+        "timestamp": time.time()
+    }
+
+
+# Add a protected tool to test authentication
+# @mcp.tool
+# async def get_token_info() -> dict:
+#     """Returns information about the Auth0 token."""
+#     from fastmcp.server.dependencies import get_access_token
+
+#     token = get_access_token()
+
+#     return {
+#         "issuer": token.claims.get("iss"),
+#         "audience": token.claims.get("aud"),
+#         "scope": token.claims.get("scope")
+#     }
 
 app = mcp.http_app()
 

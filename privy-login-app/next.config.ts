@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "www.app.pandaterminal.com",
+        hostname: "media.discordapp.net",
       },
     ],
   },
