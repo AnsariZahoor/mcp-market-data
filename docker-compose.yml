@@ -1,0 +1,76 @@
+services:
+  # Redis for OAuth token storage
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - crypto-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    command: redis-server --appendonly yes
+
+  # MCP Server
+  crypto-mcp:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.mcp
+    container_name: crypto-mcp-server
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - REDIS_HOST=redis
+      - BASE_URL=${BASE_URL:-http://localhost:8000}
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - crypto-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Privy Login App (Next.js)
+  privy-login:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.privy
+      args:
+        - NEXT_PUBLIC_PRIVY_APP_ID=${NEXT_PUBLIC_PRIVY_APP_ID}
+        - NEXT_PUBLIC_MCP_AUTH_URL=${NEXT_PUBLIC_MCP_AUTH_URL:-http://localhost:8000}
+        - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+    container_name: privy-login-app
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - NEXT_PUBLIC_PRIVY_APP_ID=${NEXT_PUBLIC_PRIVY_APP_ID}
+      - NEXT_PUBLIC_MCP_AUTH_URL=${NEXT_PUBLIC_MCP_AUTH_URL:-http://localhost:8000}
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+    depends_on:
+      - crypto-mcp
+    restart: unless-stopped
+    networks:
+      - crypto-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+networks:
+  crypto-network:
+    driver: bridge

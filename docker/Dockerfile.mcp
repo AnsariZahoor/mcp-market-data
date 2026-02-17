@@ -1,0 +1,63 @@
+# Use Python 3.12 slim image as base
+FROM python:3.12-slim
+
+ARG FASTMCP_SERVER_AUTH_PRIVY_APP_ID
+ARG FASTMCP_SERVER_AUTH_PRIVY_APP_SECRET
+ARG FASTMCP_SERVER_AUTH_PRIVY_FRONTEND_LOGIN_URL
+ARG STORAGE_ENCRYPTION_KEY
+ARG JWT_SIGNING_KEY
+ARG REDIS_HOST
+ARG RATE_LIMIT_RPS
+ARG RATE_LIMIT_BURST
+ARG CRYPTO_MCP_API_KEY
+ARG BASE_URL
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PATH="/app/.venv/bin:$PATH" \
+    FASTMCP_SERVER_AUTH_PRIVY_APP_ID=${FASTMCP_SERVER_AUTH_PRIVY_APP_ID} \
+    FASTMCP_SERVER_AUTH_PRIVY_APP_SECRET=${FASTMCP_SERVER_AUTH_PRIVY_APP_SECRET} \
+    FASTMCP_SERVER_AUTH_PRIVY_FRONTEND_LOGIN_URL=${FASTMCP_SERVER_AUTH_PRIVY_FRONTEND_LOGIN_URL} \
+    STORAGE_ENCRYPTION_KEY=${STORAGE_ENCRYPTION_KEY} \
+    JWT_SIGNING_KEY=${JWT_SIGNING_KEY} \
+    REDIS_HOST=${REDIS_HOST} \
+    RATE_LIMIT_RPS=${RATE_LIMIT_RPS} \
+    RATE_LIMIT_BURST=${RATE_LIMIT_BURST} \
+    CRYPTO_MCP_API_KEY=${CRYPTO_MCP_API_KEY} \
+    BASE_URL=${BASE_URL}
+
+# Create non-root user FIRST (before copying files)
+RUN useradd -m -u 1000 appuser
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies needed for building some Python packages
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install uv for faster dependency management
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+
+# Copy dependency files
+COPY pyproject.toml uv.lock* ./
+
+# Install dependencies using uv (as root, system packages don't need user ownership)
+RUN uv pip install --system --no-cache -r pyproject.toml
+
+# Copy app code with correct ownership (no chown -R needed!)
+COPY --chown=appuser:appuser crypto_mcp/ ./crypto_mcp/
+
+# Create logs directory with correct ownership
+RUN mkdir -p /app/logs && chown appuser:appuser /app/logs
+
+USER appuser
+
+# Expose the port the app runs on (FastMCP default is 8000)
+EXPOSE 8000
+
+# Run the server
+CMD ["uvicorn", "crypto_mcp.server:app", "--host", "0.0.0.0", "--port", "8000"]
+

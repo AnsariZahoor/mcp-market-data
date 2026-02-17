@@ -1,0 +1,70 @@
+# Stage 1: Dependencies
+FROM node:20-slim AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates python3 make g++ && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+
+# Copy package files from privy-login-app
+COPY privy-login-app/package.json privy-login-app/package-lock.json* ./
+
+RUN \
+  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
+  elif [ -f package-lock.json ]; then npm ci; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
+  else echo "Lockfile not found." && exit 1; \
+  fi
+
+# Stage 2: Builder
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY privy-login-app/ .
+
+# Build the application
+RUN \
+  if [ -f yarn.lock ]; then yarn run build; \
+  elif [ -f package-lock.json ]; then npm run build; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
+  else echo "Lockfile not found." && exit 1; \
+  fi
+
+# Stage 3: Runner (Production)
+FROM base AS runner
+WORKDIR /app
+
+# Build arguments for environment variables
+ARG NEXT_PUBLIC_PRIVY_APP_ID
+ARG NEXT_PUBLIC_MCP_AUTH_URL
+ARG NEXT_PUBLIC_APP_URL
+
+# Set environment variables for build
+ENV NEXT_PUBLIC_PRIVY_APP_ID=$NEXT_PUBLIC_PRIVY_APP_ID
+ENV NEXT_PUBLIC_MCP_AUTH_URL=$NEXT_PUBLIC_MCP_AUTH_URL
+ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
+
+ENV NODE_ENV=production
+
+# Create non-root user for security
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy necessary files from builder
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Switch to non-root user
+USER nextjs
+
+# Expose port
+EXPOSE 3000
+
+# Set hostname
+ENV HOSTNAME="0.0.0.0"
+ENV PORT=3000
+
+# Start the application
+CMD ["node", "server.js"]

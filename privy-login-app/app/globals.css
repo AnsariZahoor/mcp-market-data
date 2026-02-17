@@ -1,0 +1,484 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --border-color: #e2e8f0;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+body {
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #0a0a0a;
+  color: #fafafa;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #475569 transparent;
+}
+
+/* Loading Screen */
+.loading-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-size: 18px;
+  color: #a1a1aa;
+}
+
+/* ==================== SIMPLE WELCOME DESIGN ==================== */
+
+.welcome-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #0a0a0a;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle glow effect on the sides */
+.welcome-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40%;
+  height: 100%;
+  background: radial-gradient(ellipse at 80% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.welcome-card {
+  background: #121212;
+  border: 1px solid #1f1f1f;
+  border-radius: 28px;
+  padding: 64px 48px;
+  max-width: 640px;
+  width: 90%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1;
+}
+
+.welcome-badge {
+  padding: 6px 20px;
+  border: 1px solid #2a2a2a;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: #888888;
+  margin-bottom: 32px;
+  text-transform: uppercase;
+}
+
+.welcome-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.welcome-logo {
+  width: 36px;
+  height: 36px;
+}
+
+.welcome-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.welcome-title {
+  font-size: 52px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #ffffff;
+  margin-bottom: 24px;
+  max-width: 540px;
+}
+
+.welcome-description {
+  font-size: 18px;
+  line-height: 1.6;
+  color: #888888;
+  margin-bottom: 40px;
+  max-width: 480px;
+}
+
+.welcome-button {
+  background: #ffffff;
+  color: #000000;
+  border: none;
+  border-radius: 14px;
+  padding: 18px 48px;
+  font-size: 16px;
+  font-weight: 600;
+  width: 100%;
+  max-width: 320px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 32px;
+}
+
+.welcome-button:hover {
+  background: #f0f0f0;
+  transform: translateY(-1px);
+}
+
+.welcome-footer {
+  font-size: 13px;
+  color: #555555;
+}
+
+.welcome-footer a {
+  color: #888888;
+  text-decoration: none;
+}
+
+.welcome-footer a:hover {
+  text-decoration: underline;
+}
+
+.welcome-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #fca5a5;
+  padding: 12px 20px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+.welcome-connecting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 0;
+  color: #888888;
+}
+
+.welcome-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px 0;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.mcp-spinner {
+  animation: spin 1s linear infinite;
+  color: #6366f1;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* OAuth-specific styles */
+.oauth-scope-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(99, 102, 241, 0.1);
+  color: #a5b4fc;
+  padding: 12px 20px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  font-size: 13px;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.error-retry-link {
+  background: none;
+  border: none;
+  color: #fca5a5;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: 8px;
+}
+
+.error-retry-link:hover {
+  color: #ffffff;
+}
+
+@media (max-width: 640px) {
+  .welcome-card {
+    padding: 48px 24px;
+  }
+  .welcome-title {
+    font-size: 36px;
+  }
+  .welcome-description {
+    font-size: 16px;
+  }
+}
+
+/* ==================== DASHBOARD PAGE ==================== */
+
+.dashboard-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  color: #a1a1aa;
+}
+
+.dashboard-container {
+  min-height: 100vh;
+  background: #0a0a0a;
+  color: #fafafa;
+  padding: 40px;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 48px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(63, 63, 70, 0.6);
+}
+
+.dashboard-header > div {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.dashboard-logo {
+  width: 48px;
+  height: 48px;
+}
+
+.dashboard-header h1 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #fafafa;
+}
+
+.dashboard-logout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 10px;
+  color: #f87171;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dashboard-logout:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+}
+
+.dashboard-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.dashboard-card {
+  background: rgba(24, 24, 27, 0.95);
+  border: 1px solid rgba(63, 63, 70, 0.6);
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 24px;
+}
+
+.dashboard-card h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #10b981;
+  margin-bottom: 12px;
+}
+
+.dashboard-card p {
+  font-size: 15px;
+  color: #a1a1aa;
+  margin-bottom: 24px;
+}
+
+.user-info {
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.user-info label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: #a1a1aa;
+  margin-bottom: 6px;
+}
+
+.user-info p {
+  font-size: 14px;
+  color: #c7d2fe;
+  font-weight: 500;
+  margin: 0;
+}
+
+.token-display {
+  background: rgba(39, 39, 42, 0.8);
+  border: 1px solid rgba(63, 63, 70, 0.8);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.token-display label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: #71717a;
+  margin-bottom: 8px;
+}
+
+.token-display code {
+  display: block;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  color: #a1a1aa;
+  word-break: break-all;
+}
+
+.dashboard-info {
+  background: rgba(24, 24, 27, 0.95);
+  border: 1px solid rgba(63, 63, 70, 0.6);
+  border-radius: 16px;
+  padding: 32px;
+}
+
+.dashboard-info h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fafafa;
+  margin-bottom: 16px;
+}
+
+.dashboard-info ul {
+  list-style: none;
+  padding: 0;
+}
+
+.dashboard-info li {
+  font-size: 14px;
+  color: #a1a1aa;
+  padding: 8px 0;
+  padding-left: 24px;
+  position: relative;
+}
+
+.dashboard-info li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #6366f1;
+  font-weight: 600;
+}
+
+/* ==================== MOBILE RESPONSIVE ==================== */
+
+@media (max-width: 480px) {
+  .mcp-login-card {
+    padding: 32px 24px;
+    border-radius: 16px;
+  }
+
+  .mcp-login-header h1 {
+    font-size: 22px;
+  }
+
+  .mcp-login-logo {
+    width: 48px;
+    height: 48px;
+  }
+
+  .dashboard-container {
+    padding: 20px;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+
+  .dashboard-header > div {
+    flex-direction: column;
+  }
+
+  .dashboard-info {
+    padding: 24px;
+  }
+}
